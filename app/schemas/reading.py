@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -20,3 +20,7 @@ class ReadingOut(BaseModel):
     sensor_id: int
     value: Decimal
     observed_at: datetime
+
+    @field_serializer("value")
+    def _format_value(self, v: Decimal):
+        return f"{Decimal(v):.3f}"
