@@ -8,6 +8,10 @@ import app.main as app_main
 from app.db.session import engine
 from app.db.init_database import init_database
 
+import os
+os.environ.setdefault("ENV", "test")
+if os.environ.get("ENV") == "test" and "postgresql" in os.environ.get("DATABASE_URL",""):
+    raise RuntimeError("Tests must not run against PostgreSQL. Use in-memory SQLite instead.")
 
 TEST_DB_PATH = pathlib.Path("./tests/test.db").resolve()
 os.environ["ENV"] = "test"
