@@ -1,0 +1,7 @@
+[project]
+name = "FastAPI internet of things"
+version = "0.1.0"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = "-q"
