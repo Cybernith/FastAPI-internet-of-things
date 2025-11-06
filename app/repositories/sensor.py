@@ -40,5 +40,6 @@ class SensorRepository:
         return dict(row) if row else None
 
     def delete(self, id: int) -> None:
-        self.db.execute(delete(sensors).where(sensors.c.id == id))
+        result = self.db.execute(delete(sensors).where(sensors.c.id == id))
         self.db.commit()
+        return result.rowcount

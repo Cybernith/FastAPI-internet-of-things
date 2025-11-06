@@ -13,7 +13,7 @@ sensors = Table(
     "sensors", metadata,
     Column("id", Integer, primary_key=True),
     Column("name", String(120), nullable=False),
-    Column("unit_id", Integer, ForeignKey("units.id", ondelete="RESTRICT"), nullable=False, index=True),
+    Column("unit_id", Integer, ForeignKey("units.id"), nullable=False),
     Column("location", String(200), nullable=True),
 )
 

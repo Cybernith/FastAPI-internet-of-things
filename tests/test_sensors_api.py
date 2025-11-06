@@ -62,6 +62,11 @@ def test_sensor_with_invalid_unit_fk(client):
 
     assert response.status_code == 201
 
+    # INVALID FK - should fail
+    bad_payload = {"name": _uniq("BadSensor"), "unit_id": 999999}
+    response = client.post("/sensors/", json=bad_payload)
+    assert response.status_code in (400, 409)
+
 
 def test_sensors_pagination_and_multiple_units(client):
     # CREATE UNIQUE UNIT
