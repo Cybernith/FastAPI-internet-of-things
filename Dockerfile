@@ -4,14 +4,12 @@ FROM python:3.12-slim
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first for caching
-COPY pyproject.toml poetry.lock* /app/
-
-# Install dependencies
+# Copy requirements and install
+COPY requirements.txt /app/
 RUN pip install --upgrade pip
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
+RUN pip install -r requirements.txt
 
-# Copy app source
+# Copy project
 COPY . /app
 
 # Expose port
