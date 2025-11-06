@@ -41,3 +41,8 @@ def update_unit(unit_id: int, payload: UnitUpdate, service: UnitService = Depend
 @router.delete("/{unit_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_unit(unit_id: int, service: UnitService = Depends(get_service)):
     service.delete_unit(unit_id)
+
+
+@router.get("/{unit_id}/overview", summary="Get unit overview")
+def unit_overview(unit_id: int, service: UnitService = Depends(get_service)):
+    return service.overview(unit_id)

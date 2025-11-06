@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete
 from app.db.schema import units
 from app.domain.unit import Unit
+from app.domain.sensor import Sensor
 
 
 class UnitRepository:
@@ -40,3 +41,8 @@ class UnitRepository:
     def delete(self, id: int):
         self.db.execute(delete(units).where(units.c.id == id))
         self.db.commit()
+
+
+def get_sensors(self, unit_id: int):
+    stmt = select(Sensor).where(Sensor.unit_id == unit_id)
+    return self.db.execute(stmt).scalars().all()

@@ -283,6 +283,14 @@ ___
 * `GET /units/{id}` — دریافت جزئیات یک واحد
 * `PUT /units/{id}` — بروزرسانی واحد
 * `DELETE /units/{id}` — حذف واحد
+* `GET /units/{id}/overview` — دریافت یک نمای خلاصه از وضعیت Unit شامل:
+  - نام و نماد Unit
+  - تعداد سنسورهای مرتبط (`sensor_count`)
+  - تعداد کل Readings ثبت‌شده (`reading_count`)
+  - آخرین مقدار ثبت‌شده (`latest_readings`) به‌صورت لیست شامل:
+    - `sensor_id`
+    - `value`
+    - `observed_at`
 
 ### Sensors
 

@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from sqlalchemy.exc import IntegrityError
 from app.repositories.reading import ReadingRepository
@@ -31,7 +31,7 @@ class ReadingService:
         return self.entity_to_dict(e)
 
     def create(self, payload: ReadingCreate) -> Dict:
-        observed_at = payload.observed_at or datetime.utcnow()
+        observed_at = payload.observed_at or datetime.now(timezone.utc)
         e = Reading(sensor_id=payload.sensor_id, value=payload.value, observed_at=observed_at)
         try:
             created = self.repository.create(e)
