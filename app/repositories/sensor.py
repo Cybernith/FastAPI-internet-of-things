@@ -1,45 +1,56 @@
-from typing import List, Dict, Optional
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete
 from app.db.schema import sensors
-from app.schemas.sensor import SensorCreate, SensorUpdate
-from app.core.pyd import model_to_dict
+from app.domain.sensor import Sensor
+from decimal import Decimal
 
 
 class SensorRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def list(self, skip: int = 0, limit: int = 100, unit_id: Optional[int] = None) -> List[Dict]:
+    def to_entity(self, row) -> Sensor:
+        return Sensor(
+            id=int(row["id"]),
+            name=row["name"],
+            unit_id=int(row["unit_id"]),
+            location=row["location"],
+        )
+
+    def list(self, skip: int = 0, limit: int = 100, unit_id: Optional[int] = None) -> List[Sensor]:
         stmt = select(sensors)
         if unit_id is not None:
             stmt = stmt.where(sensors.c.unit_id == unit_id)
         stmt = stmt.offset(skip).limit(limit)
         rows = self.db.execute(stmt).mappings().all()
-        return [dict(r) for r in rows]
+        return [self.to_entity(r) for r in rows]
 
-    def get(self, id: int) -> Optional[Dict]:
+    def get(self, id: int) -> Optional[Sensor]:
         row = self.db.execute(select(sensors).where(sensors.c.id == id)).mappings().first()
-        return dict(row) if row else None
+        return self.to_entity(row) if row else None
 
-    def create(self, payload: SensorCreate) -> Dict:
-        data = model_to_dict(payload)
-        stmt = insert(sensors).values(**data).returning(sensors)
+    def create(self, sensor: Sensor) -> Sensor:
+        stmt = insert(sensors).values(
+            name=sensor.name,
+            unit_id=sensor.unit_id,
+            location=sensor.location
+        ).returning(sensors)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
-        return dict(row)
+        return self.to_entity(row)
 
-    def update(self, id: int, payload: SensorUpdate) -> Optional[Dict]:
-        data = model_to_dict(payload, exclude_unset=True)
-        data = {k: v for k, v in data.items() if v is not None}
-        if not data:
-            return self.get(id)
-        stmt = update(sensors).where(sensors.c.id == id).values(**data).returning(sensors)
+    def update(self, sensor: Sensor) -> Optional[Sensor]:
+        stmt = update(sensors).where(sensors.c.id == sensor.id).values(
+            name=sensor.name,
+            unit_id=sensor.unit_id,
+            location=sensor.location
+        ).returning(sensors)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
-        return dict(row) if row else None
+        return self.to_entity(row) if row else None
 
-    def delete(self, id: int) -> None:
+    def delete(self, id: int) -> int:
         result = self.db.execute(delete(sensors).where(sensors.c.id == id))
         self.db.commit()
-        return result.rowcount
+        return getattr(result, "rowcount", 0)

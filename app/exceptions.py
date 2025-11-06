@@ -4,3 +4,7 @@ class NotFoundError(Exception):
 
 class ForeignKeyError(Exception):
     pass
+
+
+class DuplicateError(Exception):
+    pass
