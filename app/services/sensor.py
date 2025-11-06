@@ -11,30 +11,30 @@ from app.exceptions import NotFoundError, ForeignKeyError, DuplicateError
 class SensorService:
     def __init__(self, db):
         self.db = db
-        self.repo = SensorRepository(db)
-        self.unit_repo = UnitRepository(db)
+        self.repository = SensorRepository(db)
+        self.unit_repository = UnitRepository(db)
 
     def to_dict(self, e: Sensor) -> Dict:
         return {"id": e.id, "name": e.name, "unit_id": e.unit_id, "location": e.location}
 
     def list_sensors(self, skip: int = 0, limit: int = 100, unit_id: Optional[int] = None) -> List[Dict]:
-        ents = self.repo.list(skip, limit, unit_id)
+        ents = self.repository.list(skip, limit, unit_id)
         return [self.to_dict(e) for e in ents]
 
     def get_sensor(self, sensor_id: int) -> Dict:
-        e = self.repo.get(sensor_id)
+        e = self.repository.get(sensor_id)
         if not e:
             raise NotFoundError("Sensor not found")
         return self.to_dict(e)
 
     def create_sensor(self, payload: SensorCreate) -> Dict:
-        unit = self.unit_repo.get(payload.unit_id)
+        unit = self.unit_repository.get(payload.unit_id)
         if not unit:
             raise ForeignKeyError("Unit does not exist")
 
-        sensor = Sensor(id=0, name=payload.name, unit_id=payload.unit_id, location=payload.location)
+        sensor = Sensor(name=payload.name, unit_id=payload.unit_id, location=payload.location)
         try:
-            created = self.repo.create(sensor)
+            created = self.repository.create(sensor)
             return self.to_dict(created)
         except IntegrityError as exc:
             message = str(getattr(exc, "orig", exc)).lower()
@@ -45,14 +45,14 @@ class SensorService:
             raise
 
     def update_sensor(self, sensor_id: int, payload: SensorUpdate) -> Dict:
-        existing = self.repo.get(sensor_id)
+        existing = self.repository.get(sensor_id)
         if not existing:
             raise NotFoundError("Sensor not found")
 
         if payload.name is not None:
             existing.update_name(payload.name)
         if payload.unit_id is not None:
-            unit = self.unit_repo.get(payload.unit_id)
+            unit = self.unit_repository.get(payload.unit_id)
             if not unit:
                 raise ForeignKeyError("Unit does not exist")
             existing.update_unit(payload.unit_id)
@@ -60,7 +60,7 @@ class SensorService:
             existing.update_location(payload.location)
 
         try:
-            updated = self.repo.update(existing)
+            updated = self.repository.update(existing)
             if not updated:
                 raise NotFoundError("Sensor not found")
             return self.to_dict(updated)
@@ -73,9 +73,9 @@ class SensorService:
             raise
 
     def delete_sensor(self, sensor_id: int) -> None:
-        existing = self.repo.get(sensor_id)
+        existing = self.repository.get(sensor_id)
         if not existing:
             raise NotFoundError("Sensor not found")
-        rowcount = self.repo.delete(sensor_id)
+        rowcount = self.repository.delete(sensor_id)
         if rowcount == 0:
             raise NotFoundError("Sensor not found")

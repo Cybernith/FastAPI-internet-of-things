@@ -1,12 +1,10 @@
-# app/domain/reading.py
-
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
 
 class Reading:
-    def __init__(self, id: int, sensor_id: int, value: Decimal, observed_at: datetime):
+    def __init__(self, sensor_id: int, value: Decimal, observed_at: datetime, id: Optional[int] = None):
         self.id = id
         self.sensor_id = sensor_id
         self.value = value

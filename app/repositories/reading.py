@@ -1,5 +1,3 @@
-# app/repositories/reading.py
-
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete

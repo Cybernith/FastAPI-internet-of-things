@@ -4,21 +4,21 @@ from app.schemas.unit import UnitCreate, UnitUpdate
 
 
 class UnitService:
-    def __init__(self, repo: UnitRepository):
-        self.repo = repo
+    def __init__(self, repository: UnitRepository):
+        self.repository = repository
 
     def list_units(self, skip: int = 0, limit: int = 100):
-        return self.repo.list(skip, limit)
+        return self.repository.list(skip, limit)
 
     def get_unit(self, id: int) -> Unit:
-        unit = self.repo.get(id)
+        unit = self.repository.get(id)
         if not unit:
             raise ValueError("Unit not found")
         return unit
 
     def create_unit(self, payload: UnitCreate) -> Unit:
-        unit = Unit(id=0, name=payload.name, symbol=payload.symbol)
-        return self.repo.create(unit)
+        unit = Unit(name=payload.name, symbol=payload.symbol)
+        return self.repository.create(unit)
 
     def update_unit(self, id: int, payload: UnitUpdate) -> Unit:
         unit = self.get_unit(id)
@@ -26,7 +26,7 @@ class UnitService:
             unit.rename(payload.name)
         if payload.symbol is not None:
             unit.change_symbol(payload.symbol)
-        return self.repo.update(unit)
+        return self.repository.update(unit)
 
     def delete_unit(self, id: int):
-        self.repo.delete(id)
+        self.repository.delete(id)

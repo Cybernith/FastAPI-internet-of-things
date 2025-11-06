@@ -1,5 +1,8 @@
+from typing import Optional
+
+
 class Unit:
-    def __init__(self, id: int, name: str, symbol: str):
+    def __init__(self, name: str, symbol: str, id: Optional[int] = None):
         self.id = id
         self.name = name
         self.symbol = symbol

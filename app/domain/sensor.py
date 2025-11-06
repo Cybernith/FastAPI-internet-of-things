@@ -2,7 +2,7 @@ from typing import Optional
 
 
 class Sensor:
-    def __init__(self, id: int, name: str, unit_id: int, location: Optional[str] = None):
+    def __init__(self, name: str, unit_id: int, location: Optional[str] = None, id: Optional[int] = None):
         self.id = id
         self.name = name
         self.unit_id = unit_id
