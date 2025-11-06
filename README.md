@@ -58,7 +58,7 @@ It provides CRUD operations for **units**, **sensors**, and **readings**, integr
 ## ✨ Features / ویژگی‌ها
 - ✅ CRUD APIs for **Unit**, **Sensor**, **Reading**
 - ✅ PostgreSQL connection using **Repository Pattern** (No ORM)
-- ✅ OpenAPI docs available at `/docs` `/redocs`
+- ✅ OpenAPI docs available at `/docs` `/redoc`
 - ✅ Unit tests with pytest
 - ✅ Fully containerized with Docker & docker-compose  & production-ready
 - ✅ Automatic seed/sample data on startup
@@ -241,7 +241,7 @@ ___
 ## 📦 Access Swagger / مستندات OpenAPI
 http://localhost:8000/docs
 
-http://localhost:8000/redocs
+http://localhost:8000/redoc
 
 ---
 ## 🧪 Running Tests / اجرای تست‌ها
