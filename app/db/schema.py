@@ -1,4 +1,6 @@
-from sqlalchemy import MetaData, Table, Column, Integer, String, ForeignKey, DateTime, Numeric
+from sqlalchemy import (
+    MetaData, Table, Column, Integer, String, ForeignKey, DateTime, Numeric, Index
+)
 
 metadata = MetaData()
 
@@ -24,3 +26,5 @@ readings = Table(
     Column("value", Numeric(18, 6), nullable=False),
     Column("observed_at", DateTime(timezone=False), nullable=False),
 )
+
+Index("ix_readings_sensor_observed_id_desc",readings.c.sensor_id, readings.c.observed_at.desc(), readings.c.id.desc())

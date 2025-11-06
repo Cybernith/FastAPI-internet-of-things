@@ -1,49 +1,61 @@
-from typing import List, Dict, Optional
+# app/repositories/reading.py
+
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete
 from datetime import datetime
+from decimal import Decimal
 from app.db.schema import readings
-from app.schemas.reading import ReadingCreate, ReadingUpdate
-from app.core.pyd import model_to_dict
+from app.domain.reading import Reading
 
 
 class ReadingRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def list(self, skip: int = 0, limit: int = 100, sensor_id: Optional[int] = None) -> List[Dict]:
+    def to_entity(self, row) -> Reading:
+        return Reading(
+            id=int(row["id"]),
+            sensor_id=int(row["sensor_id"]),
+            value=Decimal(row["value"]),
+            observed_at=row["observed_at"],
+        )
+
+    def list(self, skip: int = 0, limit: int = 100, sensor_id: Optional[int] = None) -> List[Reading]:
         stmt = select(readings)
         if sensor_id is not None:
             stmt = stmt.where(readings.c.sensor_id == sensor_id)
         stmt = stmt.order_by(readings.c.observed_at.desc()).offset(skip).limit(limit)
         rows = self.db.execute(stmt).mappings().all()
-        return [dict(r) for r in rows]
+        return [self.to_entity(r) for r in rows]
 
-    def get(self, id: int) -> Optional[Dict]:
+    def get(self, id: int) -> Optional[Reading]:
         row = self.db.execute(select(readings).where(readings.c.id == id)).mappings().first()
-        return dict(row) if row else None
+        return self.to_entity(row) if row else None
 
-    def create(self, payload: ReadingCreate) -> Dict:
-        data = model_to_dict(payload)
-
-        if not data.get("observed_at"):
-            data["observed_at"] = datetime.utcnow()
-
+    def create(self, reading: Reading) -> Reading:
+        data = {
+            "sensor_id": reading.sensor_id,
+            "value": reading.value,
+            "observed_at": reading.observed_at or datetime.utcnow()
+        }
         stmt = insert(readings).values(**data).returning(readings)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
-        return dict(row)
+        return self.to_entity(row)
 
-    def update(self, id: int, payload: ReadingUpdate) -> Optional[Dict]:
-        data = model_to_dict(payload, exclude_unset=True)
-        data = {k: v for k, v in data.items() if v is not None}
-        if not data:
-            return self.get(id)
-        stmt = update(readings).where(readings.c.id == id).values(**data).returning(readings)
+    def update(self, reading: Reading) -> Optional[Reading]:
+        data = {
+            "sensor_id": reading.sensor_id,
+            "value": reading.value,
+            "observed_at": reading.observed_at
+        }
+        stmt = update(readings).where(readings.c.id == reading.id).values(**data).returning(readings)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
-        return dict(row) if row else None
+        return self.to_entity(row) if row else None
 
-    def delete(self, id: int) -> None:
-        self.db.execute(delete(readings).where(readings.c.id == id))
+    def delete(self, id: int) -> int:
+        result = self.db.execute(delete(readings).where(readings.c.id == id))
         self.db.commit()
+        return getattr(result, "rowcount", 0)
