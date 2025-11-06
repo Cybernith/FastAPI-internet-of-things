@@ -4,6 +4,7 @@ from sqlalchemy import select, insert, update, delete
 from datetime import datetime
 from app.db.schema import readings
 from app.schemas.reading import ReadingCreate, ReadingUpdate
+from app.core.pyd import model_to_dict
 
 
 class ReadingRepository:
@@ -23,16 +24,19 @@ class ReadingRepository:
         return dict(row) if row else None
 
     def create(self, payload: ReadingCreate) -> Dict:
-        data = payload.dict()
+        data = model_to_dict(payload)
+
         if not data.get("observed_at"):
             data["observed_at"] = datetime.utcnow()
+
         stmt = insert(readings).values(**data).returning(readings)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
         return dict(row)
 
     def update(self, id: int, payload: ReadingUpdate) -> Optional[Dict]:
-        data = {k: v for k, v in payload.dict(exclude_unset=True).items()}
+        data = model_to_dict(payload, exclude_unset=True)
+        data = {k: v for k, v in data.items() if v is not None}
         if not data:
             return self.get(id)
         stmt = update(readings).where(readings.c.id == id).values(**data).returning(readings)
