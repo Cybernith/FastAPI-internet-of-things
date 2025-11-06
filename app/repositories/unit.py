@@ -1,41 +1,42 @@
-from typing import List, Dict, Optional
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete
 from app.db.schema import units
-from app.schemas.unit import UnitCreate, UnitUpdate
-from app.core.pyd import model_to_dict
+from app.domain.unit import Unit
+
 
 class UnitRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def list(self, skip: int = 0, limit: int = 100) -> List[Dict]:
+    def _to_entity(self, row) -> Unit:
+        return Unit(id=row.id, name=row.name, symbol=row.symbol)
+
+    def list(self, skip: int = 0, limit: int = 100) -> List[Unit]:
         stmt = select(units).offset(skip).limit(limit)
         rows = self.db.execute(stmt).mappings().all()
-        return [dict(r) for r in rows]
+        return [self._to_entity(r) for r in rows]
 
-    def get(self, id: int) -> Optional[Dict]:
+    def get(self, id: int) -> Optional[Unit]:
         stmt = select(units).where(units.c.id == id)
         row = self.db.execute(stmt).mappings().first()
-        return dict(row) if row else None
+        return self._to_entity(row) if row else None
 
-    def create(self, payload: UnitCreate) -> Dict:
-        data = model_to_dict(payload)
-        stmt = insert(units).values(**data).returning(units)
+    def create(self, unit: Unit) -> Unit:
+        stmt = insert(units).values(name=unit.name, symbol=unit.symbol).returning(units)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
-        return dict(row)
+        return self._to_entity(row)
 
-    def update(self, id: int, payload: UnitUpdate) -> Optional[Dict]:
-        data = model_to_dict(payload, exclude_unset=True)
-        data = {k: v for k, v in data.items() if v is not None}
-        if not data:
-            return self.get(id)
-        stmt = update(units).where(units.c.id == id).values(**data).returning(units)
+    def update(self, unit: Unit) -> Optional[Unit]:
+        stmt = update(units).where(units.c.id == unit.id).values(
+            name=unit.name,
+            symbol=unit.symbol
+        ).returning(units)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
-        return dict(row) if row else None
+        return self._to_entity(row) if row else None
 
-    def delete(self, id: int) -> None:
+    def delete(self, id: int):
         self.db.execute(delete(units).where(units.c.id == id))
         self.db.commit()

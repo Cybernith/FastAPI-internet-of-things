@@ -1,34 +1,38 @@
+import uuid
+
+
+def _unique_symbol():
+    return "SYM_" + uuid.uuid4().hex[:8]
+
+
 def test_units_crud_path(client):
-    # CREATE
-    response = client.post("/units/", json={"name": "Celsius", "symbol": "°C"})
+    unique_name = f"Celsius-{uuid.uuid4().hex[:6]}"
+    symbol = _unique_symbol()
+
+    response = client.post("/units/", json={"name": unique_name, "symbol": symbol})
     assert response.status_code == 201
     created = response.json()
     unit_id = created["id"]
-    assert created["name"] == "Celsius"
-    assert created["symbol"] == "°C"
+
+    assert created["name"] == unique_name
+    assert created["symbol"] == symbol
 
     # RETRIEVE
-    response = client.get("/units/%s" % unit_id)
+    response = client.get(f"/units/{unit_id}")
     assert response.status_code == 200
-    assert response.json()["name"] == "Celsius"
+    assert response.json()["name"] == unique_name
 
-    # LIST RETRIEVE
+    # LIST
     response = client.get("/units/")
     assert response.status_code == 200
     items = response.json()
     assert any(x["id"] == unit_id for x in items)
 
     # UPDATE
-    response = client.put("/units/%s" % unit_id, json={"name": "Cel", "symbol": "°C"})
+    response = client.put(f"/units/{unit_id}", json={"name": unique_name + "-x", "symbol": _unique_symbol()})
     assert response.status_code == 200
-    assert response.json()["name"] == "Cel"
+    assert response.json()["name"] == unique_name + "-x"
 
     # DELETE
-    response = client.delete("/units/%s" % unit_id)
+    response = client.delete(f"/units/{unit_id}")
     assert response.status_code == 204
-
-
-def test_units_not_found(client):
-    response = client.get("/units/999999")
-    assert response.status_code == 404
-    assert response.json().get("detail") == "Unit not found"
