@@ -1,17 +1,25 @@
-FROM python:3.11-slim
+# Base image
+FROM python:3.12-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
+# Set working directory
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
+# Copy requirements first for caching
+COPY pyproject.toml poetry.lock* /app/
 
-COPY pyproject.toml /app/
+# Install dependencies
 RUN pip install --upgrade pip
-RUN pip install fastapi uvicorn[standard] sqlalchemy psycopg[binary] pydantic pytest
+RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
 
-COPY app /app/app
+# Copy app source
+COPY . /app
 
+# Expose port
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8000"]
+
+# Environment
+ENV PYTHONUNBUFFERED=1
+ENV ENV=prod
+
+# Start FastAPI with Uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

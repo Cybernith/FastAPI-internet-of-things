@@ -1,25 +1,50 @@
 version: "3.9"
+
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:16
+    container_name: iot_postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: iotdb
+      POSTGRES_USER: fastapi
+      POSTGRES_PASSWORD: fastapi
+      POSTGRES_DB: iot_db
     ports:
-      - "3030:3030"
+      - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - iot_net
 
-  api:
+  seed:
     build: .
-    environment:
-      DATABASE_URL: postgresql+psycopg://postgres:slowj504@localhost:3030/IOTDB # for local
-      ENV: prod
+    container_name: iot_seed
     depends_on:
       - db
+    environment:
+      DATABASE_URL: postgresql+psycopg2://fastapi:fastapi@db:5432/iot_db
+      ENV: prod
+    command: python -m app.db.seed_run
+    networks:
+      - iot_net
+
+  web:
+    build: .
+    container_name: iot_fastapi
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg2://fastapi:fastapi@db:5432/iot_db
+      ENV: prod
+    networks:
+      - iot_net
+    volumes:
+      - .:/app
 
 volumes:
-  pgdata:
+  postgres_data:
+
+networks:
+  iot_net:
