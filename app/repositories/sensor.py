@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete
 from app.db.schema import sensors
 from app.schemas.sensor import SensorCreate, SensorUpdate
+from app.core.pyd import model_to_dict
 
 
 class SensorRepository:
@@ -22,13 +23,15 @@ class SensorRepository:
         return dict(row) if row else None
 
     def create(self, payload: SensorCreate) -> Dict:
-        stmt = insert(sensors).values(**payload.dict()).returning(sensors)
+        data = model_to_dict(payload)
+        stmt = insert(sensors).values(**data).returning(sensors)
         row = self.db.execute(stmt).mappings().first()
         self.db.commit()
         return dict(row)
 
     def update(self, id: int, payload: SensorUpdate) -> Optional[Dict]:
-        data = {k: v for k, v in payload.dict(exclude_unset=True).items()}
+        data = model_to_dict(payload, exclude_unset=True)
+        data = {k: v for k, v in data.items() if v is not None}
         if not data:
             return self.get(id)
         stmt = update(sensors).where(sensors.c.id == id).values(**data).returning(sensors)
