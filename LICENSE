@@ -1,35 +1,44 @@
-MIT License — IoT / FastAPI Enhanced Edition
-
+Proprietary License — IoT / FastAPI Systems
+Restricted Use — No Permission, No Rights Granted
 Copyright (c) 2025
 Soroosh Morshedi — IoT / FastAPI Systems
 https://sorooshmorshedi.ir
 ---------------------------------------------------------------------
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-“Software”), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+This software, including all source code, binaries, APIs, firmware,
+architectures, diagrams, and documentation (the “Software”), is the
+exclusive intellectual property of the Owner.
 
-The above copyright notice, author attribution, and website link
-shall be included in all copies or substantial portions of the Software.
+NO individual, company, organization, or automated system is permitted
+to use, copy, modify, merge, publish, distribute, re-sell, deploy,
+host, decompile, reverse-engineer, integrate, or sublicense this
+Software — in whole or in part — WITHOUT PRIOR WRITTEN PERMISSION
+from the Owner.
 
-The Software may be used for personal, research, commercial,
-industrial, embedded-systems, or cloud-based IoT deployments, provided
-that the terms of this license remain intact.
+Unauthorized use of this Software is strictly prohibited and may
+result in legal action, financial claims, service takedown, and
+compensatory damages as permitted under applicable law.
 
 ---------------------------------------------------------------------
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, RELIABILITY IN
-DISTRIBUTED SYSTEMS, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
-ARISING FROM, OR IN CONNECTION WITH, THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+ALLOWED USAGE (ONLY WITH WRITTEN PERMISSION FROM OWNER)
+---------------------------------------------------------------------
+• Personal use — ONLY if pre-approved  
+• Research use — ONLY if pre-approved  
+• Commercial or enterprise deployments — ONLY with a signed license  
+• IoT, embedded-systems, edge devices, cloud APIs — ONLY with written permission  
+• Modifications, forks, or derivative works — ONLY if explicitly approved  
+
+No permissions are granted implicitly or automatically.
+
+---------------------------------------------------------------------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+INCLUDING BUT NOT LIMITED TO: PERFORMANCE, RELIABILITY,
+SECURITY, AVAILABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+OR NON-INFRINGEMENT. THE OWNER IS NOT LIABLE FOR ANY DAMAGES,
+LOSSES, OR SYSTEM FAILURES RESULTING FROM AUTHORIZED OR
+UNAUTHORIZED USE OF THE SOFTWARE.
 ---------------------------------------------------------------------
 
-IoT Edge → Cloud → API Core
-FastAPI Powered • Sensor-Ready • High-Performance Architecture
+For licensing inquiries or partnership requests, contact:
+Soroosh Morshedi — IoT / FastAPI Systems  
+https://sorooshmorshedi.ir
